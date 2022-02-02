@@ -4,13 +4,14 @@
       {{ label }}
       <input
         class="text-field__input"
+        :class="{'text-field__input--error' : error}"
         :type="type"
         :placeholder="placeholder"
         :value="value"
         @input="$emit('input', $event.target.value)"
       />
     </label>
-    <p v-show="error" class="text-field__error">{{ error }}</p>
+    <span v-if="error" class="text-field__error">{{ error }}</span>
   </div>
 </template>
 
@@ -28,6 +29,10 @@ export default {
 </script>
 
 <style scoped>
+.text-field {
+  position: relative;
+}
+
 .text-field__label {
   color: #756F86;
   font-weight: 500;
@@ -62,9 +67,18 @@ export default {
   color: #7C9CBF;
 }
 
+.text-field__input--error {
+  border: 1px solid #912222;
+}
+
 .text-field__error {
-  font-size: 14px;
+  position: absolute;
+  bottom: -17px;
+  padding: 0 6px;
+  font-size: 13px;
   line-height: 18px;
-  color: #FF7171;
+  color: white;
+  background-color: #cf3d3d;
+  border-radius: 5px;
 }
 </style>

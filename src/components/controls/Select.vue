@@ -2,7 +2,7 @@
   <label class="select">
     {{ label }}
     <select class="select__input" :class="{ 'select__input--multiple' : multiple }" :multiple="multiple" @input="select">
-      <option value=""></option>
+      <option v-if="!multiple" value=""></option>
       <option v-for="option in options" :key="option.value" :value="option.value">{{ option.text }}</option>
     </select>
   </label>

@@ -3,30 +3,30 @@
     <h1 class="form__title">Создание клиента</h1>
 
     <form>
-      <TextField class="form__field" v-model="formData.surname" label="Фамилия" type="text" placeholder="Введите фамилию" />
-      <TextField class="form__field" v-model="formData.name" label="Имя" type="text" placeholder="Введите имя" />
-      <TextField class="form__field" v-model="formData.middleName" label="Отчество" type="text" placeholder="Введите отчество" />
-      <DateField class="form__field" v-model="formData.birthDate" label="Дата рождения" />
-      <TextField class="form__field" v-model="formData.phone" label="Номер телефона" type="tel" placeholder="Введите номер телефона" />
+      <TextField class="form__field" v-model="surname" label="Фамилия" type="text" placeholder="Введите фамилию" @input="validate('surname')" :error="errors.surname" />
+      <TextField class="form__field" v-model="name" label="Имя" type="text" placeholder="Введите имя" @input="validate('name')" :error="errors.name" />
+      <TextField class="form__field" v-model="middleName" label="Отчество" type="text" placeholder="Введите отчество" />
+      <DateField class="form__field" v-model="birthDate" label="Дата рождения" @input="validate('birthDate')" :error="errors.birthDate" />
+      <TextField class="form__field" v-model="phone" label="Номер телефона" type="tel" placeholder="Введите номер телефона" @input="validate('phone')" :error="errors.phone" />
 
       <div class="form__field">
         <span class="form__field-title">Пол</span>
 
-        <RadioButton class="form__radio" v-model="formData.gender" label="Мужской" name="gender" selected-value="male" />
-        <RadioButton class="form__radio" v-model="formData.gender" label="Женский" name="gender" selected-value="female" />
+        <RadioButton class="form__radio" v-model="gender" label="Мужской" name="gender" selected-value="male" />
+        <RadioButton class="form__radio" v-model="gender" label="Женский" name="gender" selected-value="female" />
       </div>
 
-      <Select class="form__field" v-model="formData.group" label="Группа клиентов" :options="clientGroups" multiple />
-      <Select class="form__field" v-model="formData.doctor" label="Лечащий врач" :options="doctors" />
-      <Checkbox class="form__field" label="Не отправлять СМС" v-model="formData.sms" />
+      <Select class="form__field" v-model="group" label="Группа клиентов" :options="clientGroups" @input="validate('group')" :error="errors.group" multiple />
+      <Select class="form__field" v-model="doctor" label="Лечащий врач" :options="doctors" />
+      <Checkbox class="form__field" label="Не отправлять СМС" v-model="sms" />
 
       <!-- Second block -->
-      <TextField class="form__field" v-model="formData.postalCode" label="Индекс" type="text" placeholder="Индекс" />
-      <AutocompleteField class="form__field" v-model="formData.country" label="Страна" type="text" placeholder="Страна" :fetch-cb="onCountryInput" />
-      <AutocompleteField class="form__field" v-model="formData.region" label="Область" type="text" placeholder="Область" :fetch-cb="onRegionInput" />
-      <AutocompleteField class="form__field" v-model="formData.city" label="Город" type="text" placeholder="Город" :fetch-cb="onCityInput" />
-      <AutocompleteField class="form__field" v-model="formData.street" label="Улица" type="text" placeholder="Улица" :fetch-cb="onStreetInput" />
-      <TextField class="form__field" v-model="formData.house" label="Дом" type="text" placeholder="Дом" />
+      <TextField class="form__field" v-model="postalCode" label="Индекс" type="text" placeholder="Индекс" />
+      <AutocompleteField class="form__field" v-model="country" label="Страна" type="text" placeholder="Страна" :fetch-cb="onCountryInput" />
+      <AutocompleteField class="form__field" v-model="region" label="Область" type="text" placeholder="Область" :fetch-cb="onRegionInput" />
+      <AutocompleteField class="form__field" v-model="city" label="Город" type="text" placeholder="Город" :fetch-cb="onCityInput" @input="validate('city')" :error="errors.city" />
+      <AutocompleteField class="form__field" v-model="street" label="Улица" type="text" placeholder="Улица" :fetch-cb="onStreetInput" />
+      <TextField class="form__field" v-model="house" label="Дом" type="text" placeholder="Дом" />
     </form>
 </div>
 </template>
@@ -39,29 +39,32 @@ import Select from './controls/Select.vue'
 import Checkbox from './controls/Checkbox.vue'
 import AutocompleteField from './controls/AutocompleteField.vue'
 
+import { validationMixin } from 'vuelidate'
+import { required } from 'vuelidate/lib/validators'
+
 export default {
   name: 'Form',
+  mixins: [validationMixin],
   components: {
     TextField, DateField, RadioButton, Select, Checkbox, AutocompleteField
   },
+
   data: () => ({
-    formData: {
-      surname: '',
-      name: '',
-      middleName: '',
-      birthDate: '',
-      phone: '',
-      gender: 'male',
-      group: '',
-      doctor: '',
-      sms: true,
-      postalCode: '',
-      country: '',
-      region: '',
-      city: '',
-      street: '',
-      house: ''
-    },
+    surname: '',
+    name: '',
+    middleName: '',
+    birthDate: '',
+    phone: '',
+    group: '',
+    gender: 'male',
+    doctor: '',
+    sms: true,
+    postalCode: '',
+    country: '',
+    region: '',
+    city: '',
+    street: '',
+    house: '',
     clientGroups: [
       { text: 'VIP', value: 1 },
       { text: 'Проблемные', value: 2 },
@@ -72,8 +75,17 @@ export default {
       { text: 'Захаров', value: 2 },
       { text: 'Чернышева', value: 3 }
     ],
-    errors: new Map()
+    errors: {}
   }),
+
+  validations: {
+    surname: { required },
+    name: { required },
+    birthDate: { required },
+    phone: { required },
+    group: { required },
+    city: { required }
+  },
 
   methods: {
     onCountryInput (value) {
@@ -85,7 +97,7 @@ export default {
     },
 
     onRegionInput (value) {
-      const restrictions = this.formData.country ? { country: this.formData.country } : {}
+      const restrictions = this.country ? { country: this.country } : {}
 
       return this.fetchAutocomplete(value, 'region', restrictions)
         .then(({ suggestions }) => suggestions.map(el => ({
@@ -95,7 +107,7 @@ export default {
     },
 
     onCityInput (value) {
-      const restrictions = this.formData.country ? { country: this.formData.country } : {}
+      const restrictions = this.country ? { country: this.country } : {}
 
       return this.fetchAutocomplete(value, 'city', restrictions)
         .then(({ suggestions }) => suggestions.map(el => ({
@@ -105,7 +117,7 @@ export default {
     },
 
     onStreetInput (value) {
-      const restrictions = this.formData.city ? { city: this.formData.city } : {}
+      const restrictions = this.city ? { city: this.city } : {}
 
       return this.fetchAutocomplete(value, 'street', restrictions)
         .then(({ suggestions }) => suggestions.map(el => ({
@@ -136,6 +148,19 @@ export default {
 
       return fetch(process.env.VUE_APP_DADATA_API_URL, options)
         .then(response => response.json())
+    },
+
+    validate(field) {
+      const v = this.$v[field]
+      v.$touch()
+
+      if (v.$error) {
+        if (!v.$required) {
+          this.errors[field] = 'Поле должно быть заполнено'
+        }
+      } else {
+        this.errors[field] = null
+      }
     }
   }
 }

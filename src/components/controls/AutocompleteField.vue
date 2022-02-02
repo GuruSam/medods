@@ -1,6 +1,6 @@
 <template>
   <div class="autocomplete">
-    <TextField v-model="textValue" :label="label" :type="type" :placeholder="placeholder" @input="onInput" />
+    <TextField v-model="textValue" :label="label" :type="type" :placeholder="placeholder" :error="error" @input="onInput" />
 
     <ul class="autocomplete__options" v-if="showOptions">
       <li
@@ -29,7 +29,8 @@ export default {
     fetchCb: {
       type: Function,
       default: () => {}
-    }
+    },
+    error: String
   },
 
   components: {
